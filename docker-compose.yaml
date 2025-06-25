@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+
+  user-service-db:
+    image: postgres:16
+    container_name: user-service-db
+    environment:
+      - POSTGRES_USER=${USER_SERVICE_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${USER_SERVICE_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${USER_SERVICE_POSTGRES_DB}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
