@@ -13,8 +13,8 @@ create table card_info
     holder          varchar(255)                           not null,
     number          varchar(16)                            not null,
     user_id         bigint                                 not null
-        constraint fkfxt61xi35lrx9ub1fhp9t1qdj
-            references app_user
+        constraint fk_card_user
+            references users
 );
 
 comment on column card_info.id is 'Identifier';

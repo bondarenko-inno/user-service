@@ -1,19 +1,25 @@
-package org.ebndrnk.userservice.model.entity;
+package org.ebndrnk.userservice.model.entity.user;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.ebndrnk.userservice.model.entity.BasicEntity;
+import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "users")
 @Getter
 @Setter
 public class User extends BasicEntity {
@@ -35,11 +41,14 @@ public class User extends BasicEntity {
     @NotNull
     private LocalDateTime birthDate;
 
-    @Comment("The email address of the user. Must be a valid email and between 4 and 50 characters.")
-    @Column(name = "email", length = 50)
+    @Comment("The email address of the user. Must be a valid email and between 4 and 50 characters and unique.")
+    @Column(name = "email", length = 50, unique = true)
     @NotNull
     @Size(min = 4, max = 50)
     @Email
     private String email;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CardInfo> cards = new ArrayList<>();
 
 }
