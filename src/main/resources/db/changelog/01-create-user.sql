@@ -34,4 +34,4 @@ comment on column users.surname is 'Name of user, will be used in column card_in
 alter table users
     owner to "user-postgres";
 
-create index idx_app_user_email on app_user (email);
+create index idx_app_user_email on users (email);

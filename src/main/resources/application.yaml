@@ -1,4 +1,11 @@
 spring:
+  liquibase:
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
   application:
     name: user-service
 
@@ -10,3 +17,7 @@ spring:
 
 server:
   port: 8071
+
+site:
+  domain:
+    url: http://127.0.0.1:${server.port}

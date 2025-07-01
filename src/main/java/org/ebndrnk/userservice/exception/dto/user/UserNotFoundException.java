@@ -1,6 +1,8 @@
 package org.ebndrnk.userservice.exception.dto.user;
 
-public class UserNotFoundException extends RuntimeException {
+import org.ebndrnk.userservice.exception.dto.UserServiceException;
+
+public class UserNotFoundException extends UserServiceException {
     public UserNotFoundException(String message) {
         super(message);
     }

@@ -1,6 +1,8 @@
 package org.ebndrnk.userservice.exception.dto.card;
 
-public class ExpiredCardException extends RuntimeException {
+import org.ebndrnk.userservice.exception.dto.UserServiceException;
+
+public class ExpiredCardException extends UserServiceException {
     public ExpiredCardException() {
         super("Cannot register an expired card");
     }

@@ -1,6 +1,8 @@
 package org.ebndrnk.userservice.exception.dto.card;
 
-public class DuplicateCardNumberException extends RuntimeException {
+import org.ebndrnk.userservice.exception.dto.UserServiceException;
+
+public class DuplicateCardNumberException extends UserServiceException {
     public DuplicateCardNumberException(String message) {
         super(message);
     }
