@@ -1,4 +1,11 @@
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${USER_SERVICE_REDIS_PASSWORD}
+      timeout: 6000ms
+
   liquibase:
     enabled: true
 
@@ -21,3 +28,12 @@ server:
 site:
   domain:
     url: http://127.0.0.1:${server.port}
+
+springdoc:
+  swagger-ui:
+    url: /v3/api-docs
+    config-url: /v3/api-docs/swagger-config
+    disable-swagger-default-url: true
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs

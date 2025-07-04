@@ -1,4 +1,4 @@
-package org.ebndrnk.userservice.repository;
+package org.ebndrnk.userservice.repository.card;
 
 import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.springframework.data.jpa.repository.JpaRepository;

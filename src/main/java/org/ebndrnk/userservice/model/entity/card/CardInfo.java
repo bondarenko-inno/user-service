@@ -1,5 +1,6 @@
 package org.ebndrnk.userservice.model.entity.card;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -30,6 +31,7 @@ public class CardInfo extends BasicEntity {
             foreignKey = @ForeignKey(name = "fk_card_user"))
     @NotNull
     @Comment("Reference to card holder")
+    @JsonBackReference
     private User user;
 
     @Column(name = "number", length = 16)

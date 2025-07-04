@@ -3,7 +3,7 @@ package org.ebndrnk.userservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.entity.user.User;
-import org.ebndrnk.userservice.repository.UserRepository;
+import org.ebndrnk.userservice.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,11 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.exception.dto.card.CardInfoNotFoundException;
 import org.ebndrnk.userservice.exception.dto.card.DuplicateCardNumberException;
 import org.ebndrnk.userservice.exception.dto.card.ExpiredCardException;
+import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
+import org.ebndrnk.userservice.mapper.CardInfoMapper;
 import org.ebndrnk.userservice.model.dto.card.CardInfoRequest;
 import org.ebndrnk.userservice.model.dto.card.CardInfoResponse;
 import org.ebndrnk.userservice.model.entity.card.CardInfo;
-import org.ebndrnk.userservice.mapper.CardInfoMapper;
-import org.ebndrnk.userservice.repository.CardInfoRepository;
+import org.ebndrnk.userservice.repository.card.CardInfoRepository;
 import org.ebndrnk.userservice.service.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class CardInfoServiceImpl implements CardInfoService {
     private final CardInfoRepository cardInfoRepository;
     private final UserService userService;
     private final CardInfoMapper cardInfoMapper;
+    private final CardInfoCacheService cardInfoCacheService;
 
     @Override
     public CardInfoResponse createCard(CardInfoRequest request) {
@@ -40,10 +42,12 @@ public class CardInfoServiceImpl implements CardInfoService {
             throw new ExpiredCardException();
         }
 
-        CardInfo cardInfo = cardInfoMapper.toEntity(request);
-        cardInfo.setUser(userService.getEntityById(request.userId()));
 
-        CardInfoResponse response = cardInfoMapper.toDto(cardInfoRepository.save(cardInfo));
+        CardInfo saved = cardInfoRepository.save(cardInfoMapper.toEntity(request));
+
+        cardInfoCacheService.save(cardInfoMapper.toCacheDto(saved));
+
+        CardInfoResponse response = cardInfoMapper.toDto(saved);
         log.info("Card created with id: {}", response.id());
         return response;
     }
@@ -51,11 +55,16 @@ public class CardInfoServiceImpl implements CardInfoService {
     @Override
     public CardInfoResponse getCardById(Long id) {
         log.info("Fetching card by id: {}", id);
-        return cardInfoRepository.findById(id)
+
+        return cardInfoCacheService.findById(id)
                 .map(cardInfoMapper::toDto)
+                .or(() -> cardInfoRepository.findById(id).map(user -> {
+                    cardInfoCacheService.save(cardInfoMapper.toCacheDto(user));
+                    return cardInfoMapper.toDto(user);
+                }))
                 .orElseThrow(() -> {
                     log.error("Card not found with id: {}", id);
-                    return new CardInfoNotFoundException("Card not found with id: " + id);
+                    return new UserNotFoundException("Card with id " + id + " not found");
                 });
     }
 
@@ -74,6 +83,8 @@ public class CardInfoServiceImpl implements CardInfoService {
             throw new CardInfoNotFoundException("No cards found for given ids: " + ids);
         }
 
+        cards.forEach(cardInfo -> cardInfoCacheService.save(cardInfoMapper.toCacheDto(cardInfo)));
+
         return cards.stream().map(cardInfoMapper::toDto).toList();
     }
 
@@ -88,8 +99,8 @@ public class CardInfoServiceImpl implements CardInfoService {
                     return new CardInfoNotFoundException("Card not found: " + id);
                 });
 
-        if (!card.getNumber().equals(request.number()) &&
-                cardInfoRepository.findByNumber(request.number()).isPresent()) {
+        if (!card.getNumber().equals(request.number())
+                && cardInfoRepository.findByNumber(request.number()).isPresent()) {
             log.warn("Duplicate card number detected during update: {}", request.number());
             throw new DuplicateCardNumberException(request.number());
         }
@@ -105,7 +116,11 @@ public class CardInfoServiceImpl implements CardInfoService {
             card.setUser(userService.getEntityById(request.userId()));
         }
 
-        CardInfoResponse response = cardInfoMapper.toDto(cardInfoRepository.save(card));
+        CardInfo saved = cardInfoRepository.save(card);
+
+        cardInfoCacheService.save(cardInfoMapper.toCacheDto(saved));
+
+        CardInfoResponse response = cardInfoMapper.toDto(saved);
         log.info("Card updated with id: {}", response.id());
         return response;
     }
@@ -115,13 +130,14 @@ public class CardInfoServiceImpl implements CardInfoService {
     public void deleteCard(Long id) {
         log.info("Deleting card with id: {}", id);
 
-        CardInfo card = cardInfoRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Card not found for deletion with id: {}", id);
-                    return new CardInfoNotFoundException("Card not found: " + id);
-                });
+        if (!cardInfoRepository.existsById(id)) {
+            log.error("Card not found for deletion with id: {}", id);
+            throw new UserNotFoundException("Card not found for id: " + id);
+        }
 
-        cardInfoRepository.delete(card);
+        cardInfoRepository.deleteById(id);
+        cardInfoCacheService.deleteById(id);
+
         log.info("Card deleted with id: {}", id);
     }
 }

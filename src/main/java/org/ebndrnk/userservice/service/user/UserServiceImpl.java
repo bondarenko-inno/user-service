@@ -9,7 +9,9 @@ import org.ebndrnk.userservice.mapper.UserMapper;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
-import org.ebndrnk.userservice.repository.UserRepository;
+import org.ebndrnk.userservice.repository.card.CardInfoRepository;
+import org.ebndrnk.userservice.repository.user.UserRepository;
+import org.ebndrnk.userservice.service.card.CardInfoCacheService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +22,13 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserCacheService userCacheService;
     private final UserMapper userMapper;
+    private final CardInfoCacheService cardInfoCacheService;
+    private final CardInfoRepository cardInfoRepository;
 
     @Override
+    @Transactional
     public UserResponse createUser(UserRequest userRequest) {
         log.info("Creating user with email: {}", userRequest.email());
 
@@ -31,7 +37,11 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException(userRequest.email());
         }
 
-        UserResponse response = userMapper.toDto(userRepository.save(userMapper.toEntity(userRequest)));
+        User saved = userRepository.save(userMapper.toEntity(userRequest));
+
+        userCacheService.save(userMapper.toCacheDto(saved));
+
+        UserResponse response = userMapper.toDto(saved);
         log.info("User created with id: {}", response.id());
         return response;
     }
@@ -40,23 +50,34 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserById(Long id) {
         log.info("Fetching user by id: {}", id);
 
-        User user = userRepository.findById(id).orElseThrow(() -> {
-            log.error("User not found with id: {}", id);
-            return new UserNotFoundException(String.format("User with id '%s' not found", id));
-        });
-
-        return userMapper.toDto(user);
+        return userCacheService.findById(id)
+                .map(userMapper::toDto)
+                .or(() -> userRepository.findById(id).map(user -> {
+                    userCacheService.save(userMapper.toCacheDto(user));
+                    return userMapper.toDto(user);
+                }))
+                .orElseThrow(() -> {
+                    log.error("User not found with id: {}", id);
+                    return new UserNotFoundException("User with id " + id + " not found");
+                });
     }
 
     @Override
     public List<UserResponse> getUsersById(List<Long> ids) {
         log.info("Fetching users by ids: {}", ids);
 
+        if (ids == null || ids.isEmpty()) {
+            log.warn("Empty or null list of ids provided to getCardsByIds");
+            throw new IllegalArgumentException("List of IDs must not be empty");
+        }
+
         List<User> users = userRepository.findAllById(ids);
         if (users.isEmpty()) {
             log.error("No users found for given ids: {}", ids);
             throw new UserNotFoundException("No users found for given ids: " + ids);
         }
+
+        users.forEach(user -> userCacheService.save(userMapper.toCacheDto(user)));
 
         return users.stream().map(userMapper::toDto).toList();
     }
@@ -75,14 +96,16 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(Long id, UserRequest userRequest) {
         log.info("Updating user with id: {}", id);
 
-        User existing = userRepository.findById(id).orElseThrow(() -> {
-            log.error("User not found for update with id: {}", id);
-            return new UserNotFoundException("User not found for id: " + id);
-        });
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found for id: " + id));
 
         userMapper.update(existing, userRequest);
 
-        UserResponse response = userMapper.toDto(userRepository.save(existing));
+        User saved = userRepository.save(existing);
+
+        userCacheService.save(userMapper.toCacheDto(saved));
+
+        UserResponse response = userMapper.toDto(saved);
         log.info("User updated with id: {}", response.id());
         return response;
     }
@@ -97,7 +120,12 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User not found for id: " + id);
         }
 
+        userCacheService.deleteById(id);
+        cardInfoRepository.findByUserId(id).forEach(cardInfo -> cardInfoCacheService.deleteById(cardInfo.getId()));
+
+
         userRepository.deleteById(id);
+
         log.info("User deleted with id: {}", id);
     }
 

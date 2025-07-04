@@ -53,8 +53,8 @@ public class GlobalExceptionHandler {
         log.error("DuplicateCardNumberException: {}", ex.getMessage(), ex);
         ErrorInfo errorInfo = new ErrorInfo(
                 LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
                 ex.getMessage(),
                 request.getRequestURI()
         );
@@ -67,8 +67,8 @@ public class GlobalExceptionHandler {
         log.error("ExpiredCardException: {}", ex.getMessage(), ex);
         ErrorInfo errorInfo = new ErrorInfo(
                 LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                HttpStatus.GONE.value(),
+                HttpStatus.GONE.getReasonPhrase(),
                 ex.getMessage(),
                 request.getRequestURI()
         );
@@ -81,8 +81,8 @@ public class GlobalExceptionHandler {
         log.error("DuplicateEmailException: {}", ex.getMessage(), ex);
         ErrorInfo errorInfo = new ErrorInfo(
                 LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
                 ex.getMessage(),
                 request.getRequestURI()
         );

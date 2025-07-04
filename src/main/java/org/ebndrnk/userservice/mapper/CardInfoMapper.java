@@ -1,7 +1,10 @@
 package org.ebndrnk.userservice.mapper;
 
+import org.ebndrnk.userservice.model.dto.card.CardInfoCacheDto;
 import org.ebndrnk.userservice.model.dto.card.CardInfoRequest;
 import org.ebndrnk.userservice.model.dto.card.CardInfoResponse;
+import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
+import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.ebndrnk.userservice.model.entity.user.User;
 import org.mapstruct.Mapper;
@@ -19,6 +22,11 @@ public interface CardInfoMapper {
 
     @Mapping(source = "userId", target = "user")
     void update(@MappingTarget CardInfo entity, CardInfoRequest dto);
+
+    @Mapping(source = "user", target = "userId")
+    CardInfoCacheDto toCacheDto(CardInfo entity);
+
+    CardInfoResponse toDto(CardInfoCacheDto cacheDto);
 
     default User map(Long userId) {
         if (userId == null) {
