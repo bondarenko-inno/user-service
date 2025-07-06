@@ -31,11 +31,11 @@ services:
 
   user-service:
     build:
-      context: .            # путь к папке с Dockerfile, обычно корень проекта
-      dockerfile: Dockerfile  # имя Dockerfile (если не Dockerfile, укажи имя)
+      context: .
+      dockerfile: Dockerfile
     container_name: user-service
     ports:
-      - "8071:8071"         # прокидываем порт приложения
+      - "8071:8071"
     environment:
       - USER_SERVICE_POSTGRES_USER=${USER_SERVICE_POSTGRES_USER}
       - USER_SERVICE_POSTGRES_PASSWORD=${USER_SERVICE_POSTGRES_PASSWORD}

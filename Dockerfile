@@ -1,4 +1,3 @@
-# Use full JDK for build stage (compile + package)
 FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
@@ -15,7 +14,6 @@ COPY src ./src
 
 RUN ./mvnw clean package -DskipTests
 
-# Use slim JRE for running the app
 FROM eclipse-temurin:21-jre-alpine
 
 RUN addgroup -S spring && adduser -S spring -G spring
