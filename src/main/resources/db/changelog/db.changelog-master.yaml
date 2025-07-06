@@ -3,4 +3,3 @@ databaseChangeLog:
       file: db/changelog/01-create-user.sql
   - include:
       file: db/changelog/02-create-card-info.sql
-
