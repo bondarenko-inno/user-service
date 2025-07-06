@@ -1,42 +1,35 @@
 package org.ebndrnk.userservice.service.user;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
-import org.ebndrnk.userservice.repository.user.UserRedisRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class UserCacheService {
+/**
+ * Service interface for managing user cache data.
+ * <p>
+ * Provides methods to find, save, and delete cached user information.
+ */
+public interface UserCacheService {
 
-    private final UserRedisRepository userRedisRepository;
+    /**
+     * Finds cached user information by user ID.
+     *
+     * @param id the unique identifier of the user
+     * @return an Optional containing the cached user DTO if found, or empty otherwise
+     */
+    Optional<UserCacheDto> findById(Long id);
 
-    public Optional<UserCacheDto> findById(Long id) {
-        try {
-            return userRedisRepository.findById(id);
-        } catch (Exception e) {
-            log.error("Failed to fetch user from Redis", e);
-            return Optional.empty();
-        }
-    }
+    /**
+     * Saves or updates user cache information.
+     *
+     * @param userCacheDto the DTO containing user cache data to save
+     */
+    void save(UserCacheDto userCacheDto);
 
-    public void save(UserCacheDto userCacheDto) {
-        try {
-            userRedisRepository.save(userCacheDto);
-        } catch (Exception e) {
-            log.error("Failed to save user to Redis", e);
-        }
-    }
-
-    public void deleteById(Long id) {
-        try {
-            userRedisRepository.deleteById(id);
-        } catch (Exception e) {
-            log.error("Failed to delete user from Redis", e);
-        }
-    }
+    /**
+     * Deletes cached user information by user ID.
+     *
+     * @param id the unique identifier of the user cache to delete
+     */
+    void deleteById(Long id);
 }

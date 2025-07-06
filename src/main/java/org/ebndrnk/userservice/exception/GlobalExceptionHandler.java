@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+/**
+ * Global exception handler for REST controllers.
+ * <p>
+ * Handles specific custom exceptions and returns structured error responses
+ * with appropriate HTTP status codes and error details.
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,7 +41,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CardInfoNotFoundException.class)
     public ResponseEntity<ErrorInfo> handleCardInfoNotFoundException(
-            UserNotFoundException ex, HttpServletRequest request) {
+            CardInfoNotFoundException ex, HttpServletRequest request) {
         log.error("NoCardInfoFoundException: {}", ex.getMessage(), ex);
         ErrorInfo errorInfo = new ErrorInfo(
                 LocalDateTime.now(),
@@ -58,7 +64,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getRequestURI()
         );
-        return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorInfo, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ExpiredCardException.class)
@@ -72,7 +78,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getRequestURI()
         );
-        return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorInfo, HttpStatus.GONE);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
@@ -86,6 +92,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getRequestURI()
         );
-        return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorInfo, HttpStatus.CONFLICT);
     }
 }

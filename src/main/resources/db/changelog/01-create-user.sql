@@ -31,7 +31,6 @@ comment on column users.name is 'Name of user, will be used in column card_info.
 
 comment on column users.surname is 'Name of user, will be used in column card_info.holder';
 
-alter table users
-    owner to "user-postgres";
+
 
 create index idx_app_user_email on users (email);

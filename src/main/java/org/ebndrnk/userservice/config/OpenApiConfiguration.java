@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * OpenApiConfiguration
- *
+ * <p>
  * This configuration class sets up the OpenApi's beans
  * for OpenAPI configuration for API documentation.
  */

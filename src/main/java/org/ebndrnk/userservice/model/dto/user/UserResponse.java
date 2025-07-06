@@ -4,6 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
+/**
+ * Response DTO containing user information.
+ *
+ * @param id        unique identifier of the user
+ * @param name      user's first name
+ * @param surname   user's surname
+ * @param email     user's email address
+ * @param birthDate user's date of birth in ISO 8601 format
+ */
 @Schema(description = "Response containing user information.")
 public record UserResponse(
 

@@ -1,47 +1,37 @@
 package org.ebndrnk.userservice.service.card;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.model.dto.card.CardInfoCacheDto;
-import org.ebndrnk.userservice.model.entity.card.CardInfo;
-import org.ebndrnk.userservice.repository.card.CardInfoRepository;
-import org.ebndrnk.userservice.repository.card.CardInfoRedisRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class CardInfoCacheService {
+/**
+ * Service interface for managing card information cache.
+ * <p>
+ * Provides methods to retrieve, save, and delete card cache data
+ * in a transactional context to ensure consistency.
+ */
+public interface CardInfoCacheService {
 
-    private final CardInfoRedisRepository cardRedisRepository;
+    /**
+     * Retrieves a cached card information DTO by its identifier.
+     *
+     * @param id the unique identifier of the card
+     * @return an Optional containing the cached card information if found, or empty otherwise
+     */
+    Optional<CardInfoCacheDto> findById(Long id);
 
-    public Optional<CardInfoCacheDto> findById(Long id) {
-        try {
-            return cardRedisRepository.findById(id);
-        } catch (Exception e) {
-            log.error("Failed to fetch card from Redis", e);
-            return Optional.empty();
-        }
-    }
+    /**
+     * Saves or updates the card information cache entry.
+     *
+     * @param cardCachedDto the DTO representing the card information to cache
+     */
+    void save(CardInfoCacheDto cardCachedDto);
 
-    @Transactional
-    public void save(CardInfoCacheDto cardCachedDto) {
-        try {
-            cardRedisRepository.save(cardCachedDto);
-        } catch (Exception e) {
-            log.error("Failed to save user to Redis", e);
-        }
-    }
-
-    @Transactional
-    public void deleteById(Long id) {
-        try {
-            cardRedisRepository.deleteById(id);
-        } catch (Exception e) {
-            log.error("Failed to delete user from Redis", e);
-        }
-    }
+    /**
+     * Deletes the cached card information by its identifier.
+     *
+     * @param id the unique identifier of the card cache to delete
+     */
+    void deleteById(Long id);
 }

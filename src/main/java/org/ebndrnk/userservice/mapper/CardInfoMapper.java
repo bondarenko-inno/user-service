@@ -3,14 +3,19 @@ package org.ebndrnk.userservice.mapper;
 import org.ebndrnk.userservice.model.dto.card.CardInfoCacheDto;
 import org.ebndrnk.userservice.model.dto.card.CardInfoRequest;
 import org.ebndrnk.userservice.model.dto.card.CardInfoResponse;
-import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
-import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.ebndrnk.userservice.model.entity.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+
+/**
+ * Mapper interface for converting between CardInfo entities and their DTO representations.
+ * <p>
+ * Supports mapping between CardInfoRequest, CardInfoResponse, CardInfoCacheDto, and CardInfo entity.
+ * Uses MapStruct for automatic implementation generation.
+ */
 @Mapper(componentModel = "spring")
 public interface CardInfoMapper {
 

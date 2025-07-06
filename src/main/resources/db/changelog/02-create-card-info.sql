@@ -33,8 +33,7 @@ comment on column card_info.number is '16-digits card number';
 
 comment on column card_info.user_id is 'Reference to card holder';
 
-alter table card_info
-    owner to "user-postgres";
+
 
 create index idx_card_info_user_id on card_info (user_id);
 create index idx_card_info_number on card_info (number);

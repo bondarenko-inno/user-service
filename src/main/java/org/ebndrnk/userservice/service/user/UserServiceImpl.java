@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
         if (userRepository.findByEmail(userRequest.email()).isPresent()) {
             log.warn("Duplicate email attempted: {}", userRequest.email());
-            throw new DuplicateEmailException(userRequest.email());
+            throw new DuplicateEmailException("Email already exists: " + userRequest.email());
         }
 
         User saved = userRepository.save(userMapper.toEntity(userRequest));
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findByEmail(email)
                 .map(userMapper::toDto)
-                .orElse(null);
+                .orElseThrow(() -> new UserNotFoundException("User not found for email: " + email));
     }
 
     @Override

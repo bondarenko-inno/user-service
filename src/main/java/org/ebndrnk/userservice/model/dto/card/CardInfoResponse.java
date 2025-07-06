@@ -4,6 +4,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * Response DTO containing card information.
+ *
+ * @param id             unique identifier of the card
+ * @param number         16-digit card number
+ * @param holder         name of the cardholder
+ * @param expirationDate expiration date of the card in ISO 8601 format (YYYY-MM-DDThh:mm:ss)
+ * @param userId         identifier of the user who owns the card
+ */
 @Schema(description = "Response containing card information.")
 public record CardInfoResponse(
 

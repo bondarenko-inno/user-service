@@ -29,18 +29,23 @@ public class CardInfoServiceImpl implements CardInfoService {
     private final CardInfoCacheService cardInfoCacheService;
 
     @Override
+    @Transactional
     public CardInfoResponse createCard(CardInfoRequest request) {
         log.info("Creating card with number: {}", request.number());
 
         if (cardInfoRepository.findByNumber(request.number()).isPresent()) {
             log.warn("Duplicate card number attempted: {}", request.number());
-            throw new DuplicateCardNumberException(request.number());
+            throw new DuplicateCardNumberException("Card with number " + request.number() + " already exists");
         }
 
         if (request.expirationDate().isBefore(LocalDateTime.now())) {
             log.warn("Attempt to create card with expired date: {}", request.expirationDate());
-            throw new ExpiredCardException();
+            throw new ExpiredCardException("Cannot register an expired card");
         }
+
+
+        userService.getUserById(request.userId());
+
 
 
         CardInfo saved = cardInfoRepository.save(cardInfoMapper.toEntity(request));
@@ -64,7 +69,7 @@ public class CardInfoServiceImpl implements CardInfoService {
                 }))
                 .orElseThrow(() -> {
                     log.error("Card not found with id: {}", id);
-                    return new UserNotFoundException("Card with id " + id + " not found");
+                    return new CardInfoNotFoundException("Card with id " + id + " not found");
                 });
     }
 
@@ -107,7 +112,7 @@ public class CardInfoServiceImpl implements CardInfoService {
 
         if (request.expirationDate().isBefore(LocalDateTime.now())) {
             log.warn("Attempt to update card with expired date: {}", request.expirationDate());
-            throw new ExpiredCardException();
+            throw new ExpiredCardException("Cannot register an expired card");
         }
 
         cardInfoMapper.update(card, request);
@@ -132,7 +137,7 @@ public class CardInfoServiceImpl implements CardInfoService {
 
         if (!cardInfoRepository.existsById(id)) {
             log.error("Card not found for deletion with id: {}", id);
-            throw new UserNotFoundException("Card not found for id: " + id);
+            throw new CardInfoNotFoundException("Card not found for id: " + id);
         }
 
         cardInfoRepository.deleteById(id);

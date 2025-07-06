@@ -7,6 +7,13 @@ import org.ebndrnk.userservice.model.entity.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
+
+/**
+ * Mapper interface for converting between User entities and their DTO representations.
+ * <p>
+ * Supports mapping between UserRequest, UserResponse, UserCacheDto, and User entity.
+ * Uses MapStruct for automatic implementation generation.
+ */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 

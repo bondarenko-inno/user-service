@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 
 /**
  * ErrorInfo
- *
+ * <p>
  * A data transfer object representing the structure of an error response
  * in the REST API. Used to provide clients with consistent and detailed
  * information when an error or exception occurs during request processing.
- *
+ * <p>
  * Fields:
  * <ul>
  *     <li>{@code timestamp} — the date and time when the error occurred</li>
