@@ -141,6 +141,23 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+
+            <!-- Добавляем Spring Boot Maven Plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.1.5</version> <!-- укажи свою версию Spring Boot -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.ebndrnk.userservice.UserServiceApplication</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

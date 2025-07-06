@@ -1,8 +1,8 @@
 spring:
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: ${USER_SERVICE_REDIS_HOST:localhost}
+      port: ${USER_SERVICE_REDIS_PORT:6379}
       password: ${USER_SERVICE_REDIS_PASSWORD}
       timeout: 6000ms
 
@@ -17,7 +17,7 @@ spring:
     name: user-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/${USER_SERVICE_POSTGRES_DB}
+    url: jdbc:postgresql://${USER_SERVICE_POSTGRES_HOST}:${USER_SERVICE_POSTGRES_PORT}/${USER_SERVICE_POSTGRES_DB}
     username: ${USER_SERVICE_POSTGRES_USER}
     password: ${USER_SERVICE_POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver

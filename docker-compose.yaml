@@ -29,6 +29,26 @@ services:
     volumes:
       - redisdata:/data
 
+  user-service:
+    build:
+      context: .            # путь к папке с Dockerfile, обычно корень проекта
+      dockerfile: Dockerfile  # имя Dockerfile (если не Dockerfile, укажи имя)
+    container_name: user-service
+    ports:
+      - "8071:8071"         # прокидываем порт приложения
+    environment:
+      - USER_SERVICE_POSTGRES_USER=${USER_SERVICE_POSTGRES_USER}
+      - USER_SERVICE_POSTGRES_PASSWORD=${USER_SERVICE_POSTGRES_PASSWORD}
+      - USER_SERVICE_POSTGRES_DB=${USER_SERVICE_POSTGRES_DB}
+      - USER_SERVICE_POSTGRES_HOST=${USER_SERVICE_POSTGRES_HOST}
+      - USER_SERVICE_POSTGRES_PORT=${USER_SERVICE_POSTGRES_PORT}
+      - USER_SERVICE_REDIS_PASSWORD=${USER_SERVICE_REDIS_PASSWORD}
+      - USER_SERVICE_REDIS_HOST=${USER_SERVICE_REDIS_HOST}
+      - USER_SERVICE_REDIS_PORT=${USER_SERVICE_REDIS_PORT}
+    depends_on:
+      - user-service-db
+      - redis
+
 volumes:
   pgdata:
   redisdata:
