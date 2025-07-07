@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - dev
-      - caching-testing-containerization # fdor test
+      - caching-testing-containerization # for test
   pull_request:
     branches:
       - main
@@ -27,8 +27,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v3
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -36,21 +36,20 @@ jobs:
             ${{ runner.os }}-sonar
 
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
-          path: ~/.m2/repository
+          path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-m2
 
-      - name: Build and analyze
+      - name: Build, test, and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           mvn -B verify \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=user-service \
-            -Dsonar.host.url=$SONAR_HOST_URL \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar \
+            -Dsonar.projectKey=bondarenko-inno_user-service \
+            -Dsonar.organization=bondarenko-inno \
+            -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=$SONAR_TOKEN
