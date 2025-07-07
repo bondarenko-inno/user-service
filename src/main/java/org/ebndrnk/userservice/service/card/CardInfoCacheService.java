@@ -1,6 +1,5 @@
 package org.ebndrnk.userservice.service.card;
 
-import jakarta.transaction.Transactional;
 import org.ebndrnk.userservice.model.dto.card.CardInfoCacheDto;
 
 import java.util.Optional;

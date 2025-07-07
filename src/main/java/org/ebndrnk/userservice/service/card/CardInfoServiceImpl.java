@@ -1,12 +1,10 @@
 package org.ebndrnk.userservice.service.card;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.exception.dto.card.CardInfoNotFoundException;
 import org.ebndrnk.userservice.exception.dto.card.DuplicateCardNumberException;
 import org.ebndrnk.userservice.exception.dto.card.ExpiredCardException;
-import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.CardInfoMapper;
 import org.ebndrnk.userservice.model.dto.card.CardInfoRequest;
 import org.ebndrnk.userservice.model.dto.card.CardInfoResponse;
@@ -14,6 +12,7 @@ import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.ebndrnk.userservice.repository.card.CardInfoRepository;
 import org.ebndrnk.userservice.service.user.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +44,6 @@ public class CardInfoServiceImpl implements CardInfoService {
 
 
         userService.getUserById(request.userId());
-
 
 
         CardInfo saved = cardInfoRepository.save(cardInfoMapper.toEntity(request));

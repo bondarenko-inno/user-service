@@ -17,7 +17,7 @@ public class CorsConfig {
      * Creates a {@link WebMvcConfigurer} bean that configures CORS mappings.
      *
      * @return a WebMvcConfigurer that allows CORS requests from any origin,
-     *         supporting GET, POST, PUT, DELETE and OPTIONS HTTP methods with all headers allowed.
+     * supporting GET, POST, PUT, DELETE and OPTIONS HTTP methods with all headers allowed.
      */
     @Bean
     public WebMvcConfigurer corsConfigurer() {

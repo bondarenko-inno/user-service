@@ -1,7 +1,8 @@
 package org.ebndrnk.userservice.exception;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
  *     <li>{@code message} — a detailed error message for debugging or context</li>
  *     <li>{@code path} — the request URI where the error occurred</li>
  * </ul>
- *
+ * <p>
  * Example JSON response:
  * <pre>
  * {
@@ -32,12 +33,13 @@ import java.time.LocalDateTime;
  * }
  * </pre>
  */
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class ErrorInfo {
-	private LocalDateTime timestamp;
-	private int status;
-	private String error;
-	private String message;
-	private String path;
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private String message;
+    private String path;
 }

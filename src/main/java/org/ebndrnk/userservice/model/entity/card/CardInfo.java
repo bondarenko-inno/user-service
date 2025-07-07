@@ -40,7 +40,7 @@ public class CardInfo extends BasicEntity {
     @Comment("16-digits card number")
     private String number;
 
-    @Column(name ="holder")
+    @Column(name = "holder")
     @NotNull
     @Comment("Name of card holder")
     private String holder;

@@ -1,6 +1,5 @@
 package org.ebndrnk.userservice.unit.service.user;
 
-
 import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
 import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.UserMapper;
@@ -10,13 +9,11 @@ import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
 import org.ebndrnk.userservice.repository.card.CardInfoRepository;
 import org.ebndrnk.userservice.repository.user.UserRepository;
+import org.ebndrnk.userservice.service.card.CardInfoCacheService;
 import org.ebndrnk.userservice.service.user.UserCacheService;
 import org.ebndrnk.userservice.service.user.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,30 +21,47 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-class UserServiceImplTest {
+/**
+ * Unit tests for {@link UserServiceImpl}.
+ * <p>
+ * These tests verify the behavior of {@link UserServiceImpl} in various
+ * scenarios, ensuring correct handling of user creation, retrieval,
+ * updating, and deletion operations, as well as proper interaction
+ * with caching and repositories.
+ */
+class UserServiceTest {
 
-    @Mock
     private UserRepository userRepository;
-    @Mock
     private UserCacheService userCacheService;
-    @Mock
     private UserMapper userMapper;
-    @Mock
     private CardInfoRepository cardInfoRepository;
-
-    @InjectMocks
     private UserServiceImpl userService;
 
+    /**
+     * Sets up mocks and creates the service instance before each test.
+     */
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        userRepository = mock(UserRepository.class);
+        userCacheService = mock(UserCacheService.class);
+        userMapper = mock(UserMapper.class);
+        cardInfoRepository = mock(CardInfoRepository.class);
+
+        userService = new UserServiceImpl(
+                userRepository,
+                userCacheService,
+                userMapper,
+                mock(CardInfoCacheService.class),
+                cardInfoRepository
+        );
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#createUser(UserRequest)} successfully creates a user
+     * when no duplicate email exists, and saves the user in the cache.
+     */
     @Test
     void createUser_success() {
         var request = new UserRequest("John",
@@ -81,6 +95,10 @@ class UserServiceImplTest {
         verify(userCacheService).save(cacheDto);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#createUser(UserRequest)} throws
+     * {@link DuplicateEmailException} if a user with the same email already exists.
+     */
     @Test
     void createUser_duplicateEmail_throwsException() {
         var request = new UserRequest("John",
@@ -95,7 +113,10 @@ class UserServiceImplTest {
                 .isInstanceOf(DuplicateEmailException.class);
     }
 
-
+    /**
+     * Tests that {@link UserServiceImpl#getUserById(Long)} fetches a user from the database
+     * if not found in the cache, and saves it to the cache afterward.
+     */
     @Test
     void getUserById_fromDb_success() {
         var id = 1L;
@@ -122,6 +143,10 @@ class UserServiceImplTest {
         verify(userCacheService).save(cacheDto);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getUserById(Long)} throws
+     * {@link UserNotFoundException} if the user does not exist in either cache or database.
+     */
     @Test
     void getUserById_notFound() {
         var id = 1L;
@@ -133,6 +158,10 @@ class UserServiceImplTest {
                 .isInstanceOf(UserNotFoundException.class);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getUsersById(List)} returns a list of users
+     * for given IDs and converts them to DTOs.
+     */
     @Test
     void getUsersById_success() {
         var ids = List.of(1L, 2L);
@@ -161,12 +190,20 @@ class UserServiceImplTest {
         assertThat(result).containsExactly(response1, response2);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getUsersById(List)} throws
+     * {@link IllegalArgumentException} when an empty list of IDs is provided.
+     */
     @Test
     void getUsersById_emptyList_throws() {
         assertThatThrownBy(() -> userService.getUsersById(List.of()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getUsersById(List)} throws
+     * {@link UserNotFoundException} when no users are found for the provided IDs.
+     */
     @Test
     void getUsersById_noUsersFound_throws() {
         var ids = List.of(99L, 100L);
@@ -177,6 +214,10 @@ class UserServiceImplTest {
                 .isInstanceOf(UserNotFoundException.class);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getUserByEmail(String)} returns
+     * a user DTO if the user exists.
+     */
     @Test
     void getUserByEmail_found() {
         var email = "john@example.com";
@@ -195,16 +236,24 @@ class UserServiceImplTest {
         assertThat(result).isEqualTo(dto);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getUserByEmail(String)} throws
+     * {@link UserNotFoundException} if no user is found for the given email.
+     */
     @Test
     void getUserByEmail_notFound_returnsNull() {
         var email = "notfound@example.com";
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-
-        assertThatThrownBy(() -> userService.getUserByEmail(email)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.getUserByEmail(email))
+                .isInstanceOf(UserNotFoundException.class);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#updateUser(Long, UserRequest)} successfully updates
+     * user data and saves the updated user in the cache.
+     */
     @Test
     void updateUser_success() {
         var id = 1L;
@@ -213,7 +262,10 @@ class UserServiceImplTest {
                 "john.doe@example.com",
                 LocalDateTime.of(1990, 5, 15, 0, 0)
         );
+
         var existing = new User();
+        existing.setEmail("old.email@example.com");
+
         var updated = new User();
         var response = new UserResponse(id, "John",
                 "Doe",
@@ -238,6 +290,10 @@ class UserServiceImplTest {
         verify(userCacheService).save(cacheDto);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#updateUser(Long, UserRequest)} throws
+     * {@link UserNotFoundException} if the user does not exist.
+     */
     @Test
     void updateUser_notFound_throws() {
         var id = 1L;
@@ -254,6 +310,10 @@ class UserServiceImplTest {
                 .isInstanceOf(UserNotFoundException.class);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#deleteUser(Long)} deletes a user and
+     * also removes the user from the cache.
+     */
     @Test
     void deleteUser_success() {
         var id = 1L;
@@ -267,6 +327,10 @@ class UserServiceImplTest {
         verify(userRepository).deleteById(id);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#deleteUser(Long)} throws
+     * {@link UserNotFoundException} if the user does not exist.
+     */
     @Test
     void deleteUser_notFound_throws() {
         var id = 1L;
@@ -277,6 +341,10 @@ class UserServiceImplTest {
                 .isInstanceOf(UserNotFoundException.class);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getEntityById(Long)} returns
+     * the user entity when it exists.
+     */
     @Test
     void getEntityById_found() {
         var id = 1L;
@@ -290,6 +358,10 @@ class UserServiceImplTest {
         assertThat(result).isEqualTo(user);
     }
 
+    /**
+     * Tests that {@link UserServiceImpl#getEntityById(Long)} throws
+     * {@link UserNotFoundException} if the user is not found.
+     */
     @Test
     void getEntityById_notFound_throws() {
         var id = 1L;
