@@ -32,11 +32,8 @@ public class CardInfoRedisRepository implements RedisCrudRepository<CardInfoCach
      */
     @Override
     public void save(CardInfoCacheDto cardInfoCacheDto) {
-        try {
-            redisTemplate.opsForValue().set(PREFIX + cardInfoCacheDto.id(), cardInfoCacheDto, TTL);
-        } catch (Exception e) {
-            log.error("Failed to save card to Redis: {}", e.getMessage());
-        }
+        redisTemplate.opsForValue().set(PREFIX + cardInfoCacheDto.id(), cardInfoCacheDto, TTL);
+
     }
 
     /**
@@ -48,14 +45,10 @@ public class CardInfoRedisRepository implements RedisCrudRepository<CardInfoCach
      */
     @Override
     public Optional<CardInfoCacheDto> findById(Long id) {
-        try {
-            Object object = redisTemplate.opsForValue().get(PREFIX + id);
-            CardInfoCacheDto cardInfo = mapper.convertValue(object, CardInfoCacheDto.class);
-            return Optional.ofNullable(cardInfo);
-        } catch (Exception e) {
-            log.error("Failed to read card from Redis: {}", e.getMessage());
-            return Optional.empty();
-        }
+        Object object = redisTemplate.opsForValue().get(PREFIX + id);
+        CardInfoCacheDto cardInfo = mapper.convertValue(object, CardInfoCacheDto.class);
+        return Optional.ofNullable(cardInfo);
+
     }
 
     /**
@@ -65,10 +58,7 @@ public class CardInfoRedisRepository implements RedisCrudRepository<CardInfoCach
      */
     @Override
     public void deleteById(Long id) {
-        try {
-            redisTemplate.delete(PREFIX + id);
-        } catch (Exception e) {
-            log.error("Failed to delete card from Redis: {}", e.getMessage());
-        }
+        redisTemplate.delete(PREFIX + id);
+
     }
 }

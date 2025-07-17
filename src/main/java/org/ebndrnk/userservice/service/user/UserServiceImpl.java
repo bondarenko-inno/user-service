@@ -1,6 +1,5 @@
 package org.ebndrnk.userservice.service.user;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
@@ -13,6 +12,7 @@ import org.ebndrnk.userservice.repository.card.CardInfoRepository;
 import org.ebndrnk.userservice.repository.user.UserRepository;
 import org.ebndrnk.userservice.service.card.CardInfoCacheService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -99,8 +99,14 @@ public class UserServiceImpl implements UserService {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found for id: " + id));
 
-        userMapper.update(existing, userRequest);
+        if (!existing.getEmail().equals(userRequest.email())) {
+            userRepository.findByEmail(userRequest.email())
+                    .ifPresent(foundUser -> {
+                        throw new DuplicateEmailException("Email already exists: " + userRequest.email());
+                    });
+        }
 
+        userMapper.update(existing, userRequest);
         User saved = userRepository.save(existing);
 
         userCacheService.save(userMapper.toCacheDto(saved));

@@ -18,4 +18,5 @@ public record UserCacheDto(
         String surname,
         String email,
         LocalDateTime birthDate
-) {}
+) {
+}

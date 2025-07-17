@@ -19,8 +19,7 @@ public class UserCacheServiceImpl implements UserCacheService {
     public Optional<UserCacheDto> findById(Long id) {
         try {
             return userRedisRepository.findById(id);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Failed to fetch user from Redis", e);
             return Optional.empty();
         }

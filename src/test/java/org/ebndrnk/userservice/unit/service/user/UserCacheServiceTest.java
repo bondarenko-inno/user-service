@@ -18,21 +18,41 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class UserCacheServiceImplTest {
+/**
+ * Unit tests for {@link UserCacheServiceImpl}.
+ * <p>
+ * Tests cover the interaction of {@link UserCacheService} with {@link UserRedisRepository},
+ * ensuring that caching logic behaves correctly under normal and exceptional conditions.
+ */
+class UserCacheServiceTest {
 
     private UserRedisRepository userRedisRepository;
     private UserCacheService userCacheService;
 
+    /**
+     * Initializes mocks and creates an instance of {@link UserCacheServiceImpl}
+     * before each test.
+     */
     @BeforeEach
     void setUp() {
         userRedisRepository = mock(UserRedisRepository.class);
         userCacheService = new UserCacheServiceImpl(userRedisRepository);
     }
 
+    /**
+     * Verifies that {@link UserCacheService#findById(Long)} returns a {@link UserCacheDto}
+     * when the user exists in Redis.
+     */
     @Test
     void findById_shouldReturnUserCacheDto_whenExists() {
         Long userId = 1L;
-        UserCacheDto user = new UserCacheDto(userId, "John", "Doe", "john.doe@example.com", LocalDateTime.of(1990, 5, 15, 0, 0));
+        UserCacheDto user = new UserCacheDto(
+                userId,
+                "John",
+                "Doe",
+                "john.doe@example.com",
+                LocalDateTime.of(1990, 5, 15, 0, 0)
+        );
 
         when(userRedisRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -47,6 +67,10 @@ class UserCacheServiceImplTest {
         verify(userRedisRepository, times(1)).findById(userId);
     }
 
+    /**
+     * Verifies that {@link UserCacheService#findById(Long)} returns an empty {@link Optional}
+     * when an exception occurs while accessing Redis.
+     */
     @Test
     void findById_shouldReturnEmptyOptional_whenExceptionThrown() {
         Long userId = 1L;
@@ -58,18 +82,38 @@ class UserCacheServiceImplTest {
         verify(userRedisRepository, times(1)).findById(userId);
     }
 
+    /**
+     * Verifies that {@link UserCacheService#save(UserCacheDto)} calls
+     * {@link UserRedisRepository#save(UserCacheDto)} exactly once.
+     */
     @Test
     void save_shouldCallRepositorySave() {
-        UserCacheDto user = new UserCacheDto(2L, "Jane", "Smith", "jane.smith@example.com", LocalDateTime.now());
+        UserCacheDto user = new UserCacheDto(
+                2L,
+                "Jane",
+                "Smith",
+                "jane.smith@example.com",
+                LocalDateTime.now()
+        );
 
         userCacheService.save(user);
 
         verify(userRedisRepository, times(1)).save(user);
     }
 
+    /**
+     * Verifies that {@link UserCacheService#save(UserCacheDto)} handles exceptions thrown
+     * by {@link UserRedisRepository#save(UserCacheDto)} without propagating them further.
+     */
     @Test
     void save_shouldLogError_whenExceptionThrown() {
-        UserCacheDto user = new UserCacheDto(2L, "Jane", "Smith", "jane.smith@example.com", LocalDateTime.now());
+        UserCacheDto user = new UserCacheDto(
+                2L,
+                "Jane",
+                "Smith",
+                "jane.smith@example.com",
+                LocalDateTime.now()
+        );
 
         doThrow(new RuntimeException("Redis error"))
                 .when(userRedisRepository).save(user);
@@ -79,6 +123,10 @@ class UserCacheServiceImplTest {
         verify(userRedisRepository, times(1)).save(user);
     }
 
+    /**
+     * Verifies that {@link UserCacheService#deleteById(Long)} calls
+     * {@link UserRedisRepository#deleteById(Long)} exactly once.
+     */
     @Test
     void deleteById_shouldCallRepositoryDelete() {
         Long userId = 3L;
@@ -88,6 +136,10 @@ class UserCacheServiceImplTest {
         verify(userRedisRepository, times(1)).deleteById(userId);
     }
 
+    /**
+     * Verifies that {@link UserCacheService#deleteById(Long)} handles exceptions thrown
+     * by {@link UserRedisRepository#deleteById(Long)} without propagating them further.
+     */
     @Test
     void deleteById_shouldLogError_whenExceptionThrown() {
         Long userId = 3L;

@@ -22,10 +22,14 @@ public class UserRedisRepository implements RedisCrudRepository<UserCacheDto> {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    /** Prefix to distinguish user keys in Redis */
+    /**
+     * Prefix to distinguish user keys in Redis
+     */
     private static final String PREFIX = "USER:";
 
-    /** Time-to-live for cached user data */
+    /**
+     * Time-to-live for cached user data
+     */
     private static final Duration TTL = Duration.ofMinutes(20);
 
     private final ObjectMapper mapper;
@@ -37,12 +41,9 @@ public class UserRedisRepository implements RedisCrudRepository<UserCacheDto> {
      */
     @Override
     public void save(UserCacheDto user) {
-        try {
-            redisTemplate.opsForValue().set(PREFIX + user.id(), user, TTL);
-            log.debug("Saved user {} to Redis", user.id());
-        } catch (Exception e) {
-            log.error("Failed to save user to Redis: {}", user.id(), e);
-        }
+        redisTemplate.opsForValue().set(PREFIX + user.id(), user, TTL);
+        log.debug("Saved user {} to Redis", user.id());
+
     }
 
     /**
@@ -54,14 +55,10 @@ public class UserRedisRepository implements RedisCrudRepository<UserCacheDto> {
      */
     @Override
     public Optional<UserCacheDto> findById(Long id) {
-        try {
-            Object object = redisTemplate.opsForValue().get(PREFIX + id);
-            UserCacheDto user = mapper.convertValue(object, UserCacheDto.class);
-            return Optional.ofNullable(user);
-        } catch (Exception e) {
-            log.error("Failed to read user from Redis: {}", id, e);
-            return Optional.empty();
-        }
+        Object object = redisTemplate.opsForValue().get(PREFIX + id);
+        UserCacheDto user = mapper.convertValue(object, UserCacheDto.class);
+        return Optional.ofNullable(user);
+
     }
 
     /**
@@ -71,11 +68,8 @@ public class UserRedisRepository implements RedisCrudRepository<UserCacheDto> {
      */
     @Override
     public void deleteById(Long id) {
-        try {
-            redisTemplate.delete(PREFIX + id);
-            log.debug("Deleted user {} from Redis", id);
-        } catch (Exception e) {
-            log.error("Failed to delete user from Redis: {}", id, e);
-        }
+        redisTemplate.delete(PREFIX + id);
+        log.debug("Deleted user {} from Redis", id);
+
     }
 }

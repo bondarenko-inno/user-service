@@ -15,9 +15,6 @@ import org.ebndrnk.userservice.service.card.CardInfoServiceImpl;
 import org.ebndrnk.userservice.service.user.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -26,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,27 +33,26 @@ import static org.mockito.Mockito.when;
  */
 class CardInfoServiceImplTest {
 
-    @InjectMocks
-    private CardInfoServiceImpl cardInfoService;
-
-    @Mock
     private CardInfoRepository cardInfoRepository;
-
-    @Mock
     private UserServiceImpl userService;
-
-    @Mock
     private CardInfoMapper cardInfoMapper;
-
-    @Mock
     private CardInfoCacheServiceImpl cardInfoCacheService;
 
-    /**
-     * Initializes Mockito annotations before each test.
-     */
+    private CardInfoServiceImpl cardInfoService;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        cardInfoRepository = mock(CardInfoRepository.class);
+        userService = mock(UserServiceImpl.class);
+        cardInfoMapper = mock(CardInfoMapper.class);
+        cardInfoCacheService = mock(CardInfoCacheServiceImpl.class);
+
+        cardInfoService = new CardInfoServiceImpl(
+                cardInfoRepository,
+                userService,
+                cardInfoMapper,
+                cardInfoCacheService
+        );
     }
 
     /**

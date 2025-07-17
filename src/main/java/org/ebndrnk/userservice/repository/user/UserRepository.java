@@ -1,6 +1,5 @@
 package org.ebndrnk.userservice.repository.user;
 
-import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.ebndrnk.userservice.model.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
