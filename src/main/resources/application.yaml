@@ -22,12 +22,15 @@ spring:
     password: ${USER_SERVICE_POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+
+  kafka:
+    bootstrap-servers: ${environment.kafka.address}
+
+
+
 server:
   port: 8071
 
-site:
-  domain:
-    url: http://127.0.0.1:${server.port}
 
 springdoc:
   swagger-ui:
@@ -37,3 +40,13 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
+
+site:
+  domain:
+    url: ${environment.host}:${server.port}
+
+environment:
+  host: http://127.0.0.1
+  kafka:
+    address: localhost:9092

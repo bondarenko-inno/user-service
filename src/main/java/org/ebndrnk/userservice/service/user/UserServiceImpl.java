@@ -37,24 +37,25 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException("Email already exists: " + userRequest.email());
         }
 
-        User saved = userRepository.save(userMapper.toEntity(userRequest));
+        User saved = userRepository.save(userMapper.requestToEntity(userRequest));
 
-        userCacheService.save(userMapper.toCacheDto(saved));
+        userCacheService.save(userMapper.entityToCacheDto(saved));
 
-        UserResponse response = userMapper.toDto(saved);
+        UserResponse response = userMapper.entityToResponse(saved);
         log.info("User created with id: {}", response.id());
         return response;
     }
+
 
     @Override
     public UserResponse getUserById(Long id) {
         log.info("Fetching user by id: {}", id);
 
         return userCacheService.findById(id)
-                .map(userMapper::toDto)
+                .map(userMapper::cacheDtoToResponse)
                 .or(() -> userRepository.findById(id).map(user -> {
-                    userCacheService.save(userMapper.toCacheDto(user));
-                    return userMapper.toDto(user);
+                    userCacheService.save(userMapper.entityToCacheDto(user));
+                    return userMapper.entityToResponse(user);
                 }))
                 .orElseThrow(() -> {
                     log.error("User not found with id: {}", id);
@@ -77,9 +78,9 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("No users found for given ids: " + ids);
         }
 
-        users.forEach(user -> userCacheService.save(userMapper.toCacheDto(user)));
+        users.forEach(user -> userCacheService.save(userMapper.entityToCacheDto(user)));
 
-        return users.stream().map(userMapper::toDto).toList();
+        return users.stream().map(userMapper::entityToResponse).toList();
     }
 
     @Override
@@ -87,8 +88,14 @@ public class UserServiceImpl implements UserService {
         log.info("Fetching user by email: {}", email);
 
         return userRepository.findByEmail(email)
-                .map(userMapper::toDto)
+                .map(userMapper::entityToResponse)
                 .orElseThrow(() -> new UserNotFoundException("User not found for email: " + email));
+    }
+
+    @Override
+    public boolean isExistByEmail(String email) {
+        log.info("Fetching user by email: {}", email);
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Override
@@ -109,9 +116,9 @@ public class UserServiceImpl implements UserService {
         userMapper.update(existing, userRequest);
         User saved = userRepository.save(existing);
 
-        userCacheService.save(userMapper.toCacheDto(saved));
+        userCacheService.save(userMapper.entityToCacheDto(saved));
 
-        UserResponse response = userMapper.toDto(saved);
+        UserResponse response = userMapper.entityToResponse(saved);
         log.info("User updated with id: {}", response.id());
         return response;
     }

@@ -43,6 +43,8 @@ public interface UserService {
      */
     UserResponse getUserByEmail(String email);
 
+
+    boolean isExistByEmail(String email);
     /**
      * Updates an existing user.
      *

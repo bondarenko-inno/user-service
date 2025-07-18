@@ -1,5 +1,6 @@
 package org.ebndrnk.userservice.mapper;
 
+import org.ebndrnk.userservice.kafka.dto.UserCreatedEvent;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
@@ -17,13 +18,15 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    User toEntity(UserRequest dto);
+    User requestToEntity(UserRequest dto);
 
-    UserResponse toDto(User entity);
+    UserResponse entityToResponse(User entity);
 
     void update(@MappingTarget User entity, UserRequest dto);
 
-    UserCacheDto toCacheDto(User entity);
+    UserCacheDto entityToCacheDto(User entity);
 
-    UserResponse toDto(UserCacheDto cacheDto);
+    UserResponse cacheDtoToResponse(UserCacheDto cacheDto);
+
+    UserRequest eventToRequest(UserCreatedEvent event);
 }
