@@ -50,3 +50,6 @@ environment:
   host: http://127.0.0.1
   kafka:
     address: localhost:9092
+
+secret:
+  key: ${SECRET_KEY}
