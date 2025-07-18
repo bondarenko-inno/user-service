@@ -3,6 +3,7 @@ package org.ebndrnk.userservice.kafka;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.kafka.dto.UserProfileCreationFailedEvent;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class UserEventPublisher {
             kafkaTemplate.send("user.profile.creation.failed", event.email(), event);
         } catch (Exception e) {
             log.error("Failed to send event for email: {}", event.email());
-            throw new RuntimeException(e);
+            throw new KafkaException("Failed to send event for email: " + event.email(), e);
         }
     }
 }

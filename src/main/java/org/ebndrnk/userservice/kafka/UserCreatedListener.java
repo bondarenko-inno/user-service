@@ -7,6 +7,7 @@ import org.ebndrnk.userservice.kafka.dto.UserCreatedEvent;
 import org.ebndrnk.userservice.kafka.dto.UserProfileCreationFailedEvent;
 import org.ebndrnk.userservice.mapper.UserMapper;
 import org.ebndrnk.userservice.service.user.UserService;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,9 @@ public class UserCreatedListener {
             log.info("Successfully processed user creation for email: {}", email);
         } catch (Exception e) {
             sendFailureNotification(email, e.getMessage());
-            throw new RuntimeException("Failed to process user creation for email: " + email, e);
+            throw new KafkaException("Failed to process user creation for email: " + email, e);
         }
+
     }
 
     private void processUserCreation(UserCreatedEvent event) {
@@ -58,6 +60,7 @@ public class UserCreatedListener {
             );
         } catch (Exception ex) {
             log.error("Failed to send failure notification for email: {}", email, ex);
+            throw new KafkaException("Failed to send failure notification for email: " + email, ex);
         }
     }
 }
