@@ -44,7 +44,7 @@ public class JwtTokenValidator {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+            throw new JwtException("Invalid JWT token", e);
         }
     }
 }
