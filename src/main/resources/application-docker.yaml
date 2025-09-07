@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${USER_SERVICE_POSTGRES_HOST}}:${USER_SERVICE_POSTGRES_PORT}}/${USER_SERVICE_POSTGRES_DB}
+    username: ${USER_SERVICE_POSTGRES_USER}
+    password: ${USER_SERVICE_POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${USER_SERVICE_REDIS_HOST}
+      port: ${USER_SERVICE_REDIS_PORT}
+      password: ${USER_SERVICE_REDIS_PASSWORD}
+      timeout: 6000ms
+
+environment:
+  host: http://127.0.0.1
+  kafka:
+    address: ${AUTH_SERVICE_KAFKA_HOST}:${AUTH_SERVICE_KAFKA_PORT}

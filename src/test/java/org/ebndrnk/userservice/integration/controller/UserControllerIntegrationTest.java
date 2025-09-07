@@ -86,7 +86,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(1)
     void createUser_success() throws Exception {
-        var result = mockMvc.perform(post("/api/users")
+        var result = mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest))
                         .header("Authorization", TEST_TOKEN))
@@ -108,13 +108,13 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(2)
     void createUser_duplicateEmail() throws Exception {
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest))
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest))
                         .header("Authorization", TEST_TOKEN))
@@ -132,7 +132,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     void getUserById_success() throws Exception {
         Long userId = createUserAndGetId();
 
-        mockMvc.perform(get("/api/users/{id}", userId)
+        mockMvc.perform(get("/users/{id}", userId)
                 .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId));
@@ -146,7 +146,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(4)
     void getUserById_notFound() throws Exception {
-        mockMvc.perform(get("/api/users/{id}", 9999)
+        mockMvc.perform(get("/users/{id}", 9999)
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound());
     }
@@ -162,7 +162,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
         Long id1 = createUserAndGetId("john.doe@example.com");
         Long id2 = createUserAndGetId("jane.doe@example.com");
 
-        mockMvc.perform(get("/api/users")
+        mockMvc.perform(get("/users")
                         .param("ids", id1.toString(), id2.toString())
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
@@ -179,7 +179,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     void getUserByEmail_success() throws Exception {
         createUserAndGetId("john.doe@example.com");
 
-        mockMvc.perform(get("/api/users/by-email")
+        mockMvc.perform(get("/users/by-email")
                         .param("email", "john.doe@example.com")
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
@@ -194,7 +194,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(7)
     void getUserByEmail_notFound() throws Exception {
-        mockMvc.perform(get("/api/users/by-email")
+        mockMvc.perform(get("/users/by-email")
                         .param("email", "nonexistent@example.com")
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound());
@@ -214,7 +214,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
                 "Updated", "User", "john.doe@example.com", LocalDateTime.now()
         );
 
-        mockMvc.perform(put("/api/users/{id}", id)
+        mockMvc.perform(put("/users/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest))
                         .header("Authorization", TEST_TOKEN))
@@ -234,7 +234,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
                 "Updated", "User", "nonexistent@example.com", LocalDateTime.now()
         );
 
-        mockMvc.perform(put("/api/users/{id}", 9999L)
+        mockMvc.perform(put("/users/{id}", 9999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest))
                         .header("Authorization", TEST_TOKEN))
@@ -251,7 +251,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     void deleteUser_success() throws Exception {
         Long id = createUserAndGetId("john.doe@example.com");
 
-        mockMvc.perform(delete("/api/users/{id}", id)
+        mockMvc.perform(delete("/users/{id}", id)
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNoContent());
     }
@@ -264,7 +264,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(11)
     void deleteUser_notFound() throws Exception {
-        mockMvc.perform(delete("/api/users/{id}", 9999L)
+        mockMvc.perform(delete("/users/{id}", 9999L)
                         .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound());
     }
@@ -293,7 +293,7 @@ class UserControllerIntegrationTest extends TestContainersConfig {
                 "John", "Doe", email, LocalDateTime.now()
         );
 
-        var result = mockMvc.perform(post("/api/users")
+        var result = mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", TEST_TOKEN))

@@ -2,9 +2,9 @@ package org.ebndrnk.userservice.service.card;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ebndrnk.userservice.exception.dto.card.CardInfoNotFoundException;
-import org.ebndrnk.userservice.exception.dto.card.DuplicateCardNumberException;
-import org.ebndrnk.userservice.exception.dto.card.ExpiredCardException;
+import org.ebndrnk.userservice.exception.card.CardInfoNotFoundException;
+import org.ebndrnk.userservice.exception.card.DuplicateCardNumberException;
+import org.ebndrnk.userservice.exception.card.ExpiredCardException;
 import org.ebndrnk.userservice.mapper.CardInfoMapper;
 import org.ebndrnk.userservice.model.dto.card.CardInfoRequest;
 import org.ebndrnk.userservice.model.dto.card.CardInfoResponse;

@@ -36,7 +36,7 @@ import java.util.List;
  * </p>
  */
 @RestController
-@RequestMapping("/api/cards")
+@RequestMapping("/cards")
 @RequiredArgsConstructor
 @Tag(name = "Card Information", description = "Endpoints for managing user cards")
 public class CardInfoController {

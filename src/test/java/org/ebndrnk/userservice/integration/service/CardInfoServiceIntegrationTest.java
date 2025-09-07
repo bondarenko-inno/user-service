@@ -1,9 +1,9 @@
 package org.ebndrnk.userservice.integration.service;
 
 import org.ebndrnk.userservice.config.TestContainersConfig;
-import org.ebndrnk.userservice.exception.dto.card.CardInfoNotFoundException;
-import org.ebndrnk.userservice.exception.dto.card.DuplicateCardNumberException;
-import org.ebndrnk.userservice.exception.dto.card.ExpiredCardException;
+import org.ebndrnk.userservice.exception.card.CardInfoNotFoundException;
+import org.ebndrnk.userservice.exception.card.DuplicateCardNumberException;
+import org.ebndrnk.userservice.exception.card.ExpiredCardException;
 import org.ebndrnk.userservice.model.dto.card.CardInfoCacheDto;
 import org.ebndrnk.userservice.model.dto.card.CardInfoRequest;
 import org.ebndrnk.userservice.model.dto.card.CardInfoResponse;

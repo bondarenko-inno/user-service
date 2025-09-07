@@ -1,7 +1,7 @@
 package org.ebndrnk.userservice.unit.service.user;
 
-import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
-import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
+import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
+import org.ebndrnk.userservice.exception.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.UserMapper;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;

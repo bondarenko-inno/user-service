@@ -2,7 +2,7 @@ package org.ebndrnk.userservice.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
+import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
 import org.ebndrnk.userservice.kafka.dto.UserCreatedEvent;
 import org.ebndrnk.userservice.kafka.dto.UserProfileCreationFailedEvent;
 import org.ebndrnk.userservice.mapper.UserMapper;
@@ -11,7 +11,6 @@ import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Kafka listener that processes user creation events.
@@ -41,7 +40,6 @@ public class UserCreatedListener {
             groupId = "user-service-group",
             containerFactory = "userCreatedKafkaListenerContainerFactory"
     )
-    @Transactional
     public void handleUserCreated(UserCreatedEvent event, Acknowledgment acknowledgment) {
         final String email = event.email();
 

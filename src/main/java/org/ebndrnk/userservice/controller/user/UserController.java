@@ -36,7 +36,7 @@ import java.util.List;
  * </p>
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Tag(name = "User Management", description = "Endpoints for managing user information")
 public class UserController {

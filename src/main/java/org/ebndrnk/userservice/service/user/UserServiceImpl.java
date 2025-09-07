@@ -2,8 +2,8 @@ package org.ebndrnk.userservice.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
-import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
+import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
+import org.ebndrnk.userservice.exception.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.UserMapper;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
