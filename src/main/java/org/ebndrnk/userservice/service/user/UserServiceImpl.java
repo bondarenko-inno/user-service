@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
 import org.ebndrnk.userservice.exception.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.UserMapper;
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
@@ -84,12 +85,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserByEmail(String email) {
+    public UserInfoForOrder getUserByEmail(String email) {
         log.info("Fetching user by email: {}", email);
 
-        return userRepository.findByEmail(email)
-                .map(userMapper::entityToResponse)
-                .orElseThrow(() -> new UserNotFoundException("User not found for email: " + email));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
+
+        return userMapper.entityToUserInfo(user);
     }
 
     @Override

@@ -2,10 +2,12 @@ package org.ebndrnk.userservice.mapper;
 
 import org.ebndrnk.userservice.kafka.dto.UserCreatedEvent;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 
@@ -29,4 +31,10 @@ public interface UserMapper {
     UserResponse cacheDtoToResponse(UserCacheDto cacheDto);
 
     UserRequest eventToRequest(UserCreatedEvent event);
+
+    @Mapping(
+            target = "isCardAvailable",
+            expression = "java(user.getCards() != null && !user.getCards().isEmpty())"
+    )
+    UserInfoForOrder entityToUserInfo(User user);
 }
