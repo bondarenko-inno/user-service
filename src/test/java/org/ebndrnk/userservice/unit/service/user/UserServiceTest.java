@@ -4,6 +4,7 @@ import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
 import org.ebndrnk.userservice.exception.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.UserMapper;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
@@ -222,14 +223,15 @@ class UserServiceTest {
     void getUserByEmail_found() {
         var email = "john@example.com";
         var user = new User();
-        var dto = new UserResponse(1L, "John",
+        var dto = new UserInfoForOrder(1L, "John",
                 "Doe",
                 email,
-                LocalDateTime.of(1990, 5, 15, 0, 0)
+                LocalDateTime.of(1990, 5, 15, 0, 0),
+                false
         );
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        when(userMapper.entityToResponse(user)).thenReturn(dto);
+        when(userMapper.entityToUserInfo(user)).thenReturn(dto);
 
         var result = userService.getUserByEmail(email);
 

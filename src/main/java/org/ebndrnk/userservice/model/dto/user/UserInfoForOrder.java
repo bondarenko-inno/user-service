@@ -1,25 +1,32 @@
 package org.ebndrnk.userservice.model.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-public record UserInfoForOrder(
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserInfoForOrder{
         @Schema(description = "Unique identifier of the user.", example = "10")
-        Long id,
+        private Long id;
 
         @Schema(description = "User's first name.", example = "John")
-        String name,
+        private String name;
 
         @Schema(description = "User's surname.", example = "Doe")
-        String surname,
+        private String surname;
 
         @Schema(description = "User's email address.", example = "john.doe@example.com")
-        String email,
+        private String email;
 
         @Schema(description = "User's date of birth. \n Format ISO 8601: YYYY-MM-DD hh:mm:ss.000000", example = "1990-05-15T00:00:00")
-        LocalDateTime birthDate,
+        private LocalDateTime birthDate;
 
-        Boolean isCardAvailable
-) {
+        private Boolean isCardAvailable;
 }

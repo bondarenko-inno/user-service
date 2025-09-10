@@ -88,12 +88,16 @@ public class UserServiceImpl implements UserService {
     public UserInfoForOrder getUserByEmail(String email) {
         log.info("Fetching user by email: {}", email);
 
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
 
-        return userMapper.entityToUserInfo(user);
+        boolean hasCards = userRepository.hasCardsByEmail(email);
+
+        UserInfoForOrder userInfoForOrder = userMapper.entityToUserInfo(user);
+        userInfoForOrder.setIsCardAvailable(hasCards);
+        return userInfoForOrder;
     }
+
 
     @Override
     public boolean isExistByEmail(String email) {

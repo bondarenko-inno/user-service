@@ -32,9 +32,6 @@ public interface UserMapper {
 
     UserRequest eventToRequest(UserCreatedEvent event);
 
-    @Mapping(
-            target = "isCardAvailable",
-            expression = "java(user.getCards() != null && !user.getCards().isEmpty())"
-    )
+
     UserInfoForOrder entityToUserInfo(User user);
 }
