@@ -106,6 +106,12 @@ public class CardInfoController {
         return ResponseEntity.ok(cardInfoService.getCardsByIds(ids));
     }
 
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<List<CardInfoResponse>> getCardsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(cardInfoService.getCardsByUserId(userId));
+    }
+
     /**
      * Update card information by ID.
      *

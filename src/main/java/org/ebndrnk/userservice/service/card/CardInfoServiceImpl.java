@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -142,5 +143,13 @@ public class CardInfoServiceImpl implements CardInfoService {
         cardInfoCacheService.deleteById(id);
 
         log.info("Card deleted with id: {}", id);
+    }
+
+    @Override
+    public List<CardInfoResponse> getCardsByUserId(Long userId) {
+        return cardInfoRepository.findByUserId(userId)
+                .stream()
+                .map(cardInfoMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

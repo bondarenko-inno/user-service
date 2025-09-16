@@ -49,4 +49,6 @@ public interface CardInfoService {
      * @param id the ID of the card to delete.
      */
     void deleteCard(Long id);
+
+    List<CardInfoResponse> getCardsByUserId(Long userId);
 }
