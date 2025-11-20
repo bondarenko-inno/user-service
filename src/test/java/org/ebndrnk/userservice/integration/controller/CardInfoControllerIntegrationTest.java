@@ -60,6 +60,9 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     private UserResponse user;
     private CardInfoRequest cardRequest;
 
+    private final static String TEST_TOKEN = "Bearer testJwt";
+
+
     /**
      * Sets up the test environment by truncating relevant tables,
      * flushing Redis, and creating a test user and card request.
@@ -100,9 +103,10 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(1)
     void createCard_success() throws Exception {
-        mockMvc.perform(post("/api/cards")
+        mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.number").value("1234567890123456"));
@@ -116,14 +120,16 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(2)
     void createCard_duplicateNumber() throws Exception {
-        mockMvc.perform(post("/api/cards")
+        mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/api/cards")
+        mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.message").value("Card with number 1234567890123456 already exists"));
@@ -144,9 +150,10 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
                 user.id()
         );
 
-        mockMvc.perform(post("/api/cards")
+        mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expired)))
+                        .content(objectMapper.writeValueAsString(expired))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isGone())
                 .andExpect(jsonPath("$.status").value(410))
                 .andExpect(jsonPath("$.message").value("Cannot register an expired card"));
@@ -160,14 +167,16 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(4)
     void getCardById_success() throws Exception {
-        var response = mockMvc.perform(post("/api/cards")
+        var response = mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andReturn();
 
         Long id = objectMapper.readTree(response.getResponse().getContentAsString()).get("id").asLong();
 
-        mockMvc.perform(get("/api/cards/{id}", id))
+        mockMvc.perform(get("/cards/{id}", id)
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.number").value("1234567890123456"));
@@ -181,7 +190,8 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(5)
     void getCardById_notFound() throws Exception {
-        mockMvc.perform(get("/api/cards/{id}", 999L))
+        mockMvc.perform(get("/cards/{id}", 999L)
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Card with id 999 not found"));
@@ -195,9 +205,10 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(6)
     void getCardsByIds_success() throws Exception {
-        var created1 = mockMvc.perform(post("/api/cards")
+        var created1 = mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andReturn();
 
         Long id1 = objectMapper.readTree(created1.getResponse().getContentAsString()).get("id").asLong();
@@ -209,15 +220,17 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
                 user.id()
         );
 
-        var created2 = mockMvc.perform(post("/api/cards")
+        var created2 = mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(second)))
+                        .content(objectMapper.writeValueAsString(second))
+                        .header("Authorization", TEST_TOKEN))
                 .andReturn();
 
         Long id2 = objectMapper.readTree(created2.getResponse().getContentAsString()).get("id").asLong();
 
-        mockMvc.perform(get("/api/cards")
-                        .param("ids", String.valueOf(id1), String.valueOf(id2)))
+        mockMvc.perform(get("/cards")
+                        .param("ids", String.valueOf(id1), String.valueOf(id2))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$.[*].number").value(org.hamcrest.Matchers.containsInAnyOrder(
@@ -233,8 +246,9 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(7)
     void getCardsByIds_notFound() throws Exception {
-        mockMvc.perform(get("/api/cards")
-                        .param("ids", "999", "888"))
+        mockMvc.perform(get("/cards")
+                        .param("ids", "999", "888")
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("No cards found for given ids: [999, 888]"));
@@ -248,9 +262,10 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(8)
     void updateCard_success() throws Exception {
-        var created = mockMvc.perform(post("/api/cards")
+        var created = mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andReturn();
 
         Long id = objectMapper.readTree(created.getResponse().getContentAsString()).get("id").asLong();
@@ -262,9 +277,10 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
                 user.id()
         );
 
-        mockMvc.perform(put("/api/cards/{id}", id)
+        mockMvc.perform(put("/cards/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(update)))
+                        .content(objectMapper.writeValueAsString(update))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value("4444333322221111"));
     }
@@ -284,9 +300,10 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
                 user.id()
         );
 
-        mockMvc.perform(put("/api/cards/{id}", 999L)
+        mockMvc.perform(put("/cards/{id}", 999L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(update)))
+                        .content(objectMapper.writeValueAsString(update))
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Card not found: 999"));
@@ -300,14 +317,16 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(10)
     void deleteCard_success() throws Exception {
-        var created = mockMvc.perform(post("/api/cards")
+        var created = mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cardRequest)))
+                        .content(objectMapper.writeValueAsString(cardRequest))
+                        .header("Authorization", TEST_TOKEN))
                 .andReturn();
 
         Long id = objectMapper.readTree(created.getResponse().getContentAsString()).get("id").asLong();
 
-        mockMvc.perform(delete("/api/cards/{id}", id))
+        mockMvc.perform(delete("/cards/{id}", id)
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNoContent());
     }
 
@@ -319,7 +338,8 @@ class CardInfoControllerIntegrationTest extends TestContainersConfig {
     @Test
     @Order(11)
     void deleteCard_notFound() throws Exception {
-        mockMvc.perform(delete("/api/cards/{id}", 999L))
+        mockMvc.perform(delete("/cards/{id}", 999L)
+                        .header("Authorization", TEST_TOKEN))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Card not found for id: 999"));

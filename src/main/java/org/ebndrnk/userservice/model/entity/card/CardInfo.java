@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.ebndrnk.userservice.model.entity.BasicEntity;
+import org.ebndrnk.common.common.entity.BasicEntity;
 import org.ebndrnk.userservice.model.entity.user.User;
 import org.hibernate.annotations.Comment;
 

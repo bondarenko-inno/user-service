@@ -1,9 +1,10 @@
 package org.ebndrnk.userservice.unit.service.user;
 
-import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
-import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
+import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
+import org.ebndrnk.userservice.exception.user.UserNotFoundException;
 import org.ebndrnk.userservice.mapper.UserMapper;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
@@ -84,10 +85,10 @@ class UserServiceTest {
         );
 
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
-        when(userMapper.toEntity(request)).thenReturn(user);
+        when(userMapper.requestToEntity(request)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(savedUser);
-        when(userMapper.toCacheDto(savedUser)).thenReturn(cacheDto);
-        when(userMapper.toDto(savedUser)).thenReturn(response);
+        when(userMapper.entityToCacheDto(savedUser)).thenReturn(cacheDto);
+        when(userMapper.entityToResponse(savedUser)).thenReturn(response);
 
         var result = userService.createUser(request);
 
@@ -134,8 +135,8 @@ class UserServiceTest {
 
         when(userCacheService.findById(id)).thenReturn(Optional.empty());
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
-        when(userMapper.toCacheDto(user)).thenReturn(cacheDto);
-        when(userMapper.toDto(user)).thenReturn(dto);
+        when(userMapper.entityToCacheDto(user)).thenReturn(cacheDto);
+        when(userMapper.entityToResponse(user)).thenReturn(dto);
 
         var result = userService.getUserById(id);
 
@@ -181,9 +182,9 @@ class UserServiceTest {
         );
 
         when(userRepository.findAllById(ids)).thenReturn(List.of(user1, user2));
-        when(userMapper.toDto(user1)).thenReturn(response1);
-        when(userMapper.toDto(user2)).thenReturn(response2);
-        when(userMapper.toCacheDto(any())).thenReturn(mock(UserCacheDto.class));
+        when(userMapper.entityToResponse(user1)).thenReturn(response1);
+        when(userMapper.entityToResponse(user2)).thenReturn(response2);
+        when(userMapper.entityToCacheDto(any())).thenReturn(mock(UserCacheDto.class));
 
         var result = userService.getUsersById(ids);
 
@@ -222,14 +223,15 @@ class UserServiceTest {
     void getUserByEmail_found() {
         var email = "john@example.com";
         var user = new User();
-        var dto = new UserResponse(1L, "John",
+        var dto = new UserInfoForOrder(1L, "John",
                 "Doe",
                 email,
-                LocalDateTime.of(1990, 5, 15, 0, 0)
+                LocalDateTime.of(1990, 5, 15, 0, 0),
+                false
         );
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        when(userMapper.toDto(user)).thenReturn(dto);
+        when(userMapper.entityToUserInfo(user)).thenReturn(dto);
 
         var result = userService.getUserByEmail(email);
 
@@ -279,10 +281,10 @@ class UserServiceTest {
         );
 
         when(userRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(userMapper.toEntity(request)).thenReturn(updated);
+        when(userMapper.requestToEntity(request)).thenReturn(updated);
         when(userRepository.save(existing)).thenReturn(updated);
-        when(userMapper.toDto(updated)).thenReturn(response);
-        when(userMapper.toCacheDto(updated)).thenReturn(cacheDto);
+        when(userMapper.entityToResponse(updated)).thenReturn(response);
+        when(userMapper.entityToCacheDto(updated)).thenReturn(cacheDto);
 
         var result = userService.updateUser(id, request);
 

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.service.user.UserService;
@@ -36,7 +37,7 @@ import java.util.List;
  * </p>
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Tag(name = "User Management", description = "Endpoints for managing user information")
 public class UserController {
@@ -85,6 +86,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @GetMapping()
+    public ResponseEntity<List<UserResponse>> findAll() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+
     /**
      * Retrieve multiple users by IDs.
      *
@@ -123,7 +130,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "User not found"),
     })
-    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email) {
+    public ResponseEntity<UserInfoForOrder> getUserByEmail(@RequestParam String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 

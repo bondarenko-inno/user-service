@@ -16,6 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id IN :ids")
     List<User> findAllByIds(@Param("ids") List<Long> ids);
 
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
+            "FROM User u LEFT JOIN u.cards c WHERE u.email = :email")
+    boolean hasCardsByEmail(@Param("email") String email);
+
 }
 
 

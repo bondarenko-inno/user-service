@@ -1,5 +1,6 @@
 package org.ebndrnk.userservice.service.user;
 
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
@@ -18,6 +19,8 @@ public interface UserService {
      * @return the created user information as a {@link UserResponse}.
      */
     UserResponse createUser(UserRequest userRequest);
+
+    List<UserResponse> getAllUsers();
 
     /**
      * Retrieves a user by its unique identifier.
@@ -41,8 +44,10 @@ public interface UserService {
      * @param email the email address of the user.
      * @return the user information as a {@link UserResponse}.
      */
-    UserResponse getUserByEmail(String email);
+    UserInfoForOrder getUserByEmail(String email);
 
+
+    boolean isExistByEmail(String email);
     /**
      * Updates an existing user.
      *

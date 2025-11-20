@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.ebndrnk.userservice.model.entity.BasicEntity;
+import org.ebndrnk.common.common.entity.BasicEntity;
 import org.ebndrnk.userservice.model.entity.card.CardInfo;
 import org.hibernate.annotations.Comment;
 

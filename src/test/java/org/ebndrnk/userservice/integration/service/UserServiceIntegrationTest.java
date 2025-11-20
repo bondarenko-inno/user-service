@@ -1,9 +1,10 @@
 package org.ebndrnk.userservice.integration.service;
 
 import org.ebndrnk.userservice.config.TestContainersConfig;
-import org.ebndrnk.userservice.exception.dto.user.DuplicateEmailException;
-import org.ebndrnk.userservice.exception.dto.user.UserNotFoundException;
+import org.ebndrnk.userservice.exception.user.DuplicateEmailException;
+import org.ebndrnk.userservice.exception.user.UserNotFoundException;
 import org.ebndrnk.userservice.model.dto.user.UserCacheDto;
+import org.ebndrnk.userservice.model.dto.user.UserInfoForOrder;
 import org.ebndrnk.userservice.model.dto.user.UserRequest;
 import org.ebndrnk.userservice.model.dto.user.UserResponse;
 import org.ebndrnk.userservice.model.entity.user.User;
@@ -162,9 +163,9 @@ class UserServiceIntegrationTest extends TestContainersConfig {
     void getUserByEmail_success() {
         userService.createUser(userRequest);
 
-        UserResponse found = userService.getUserByEmail("john.doe@example.com");
+        UserInfoForOrder found = userService.getUserByEmail("john.doe@example.com");
         assertThat(found).isNotNull();
-        assertThat(found.email()).isEqualTo("john.doe@example.com");
+        assertThat(found.getEmail()).isEqualTo("john.doe@example.com");
     }
 
     /**
