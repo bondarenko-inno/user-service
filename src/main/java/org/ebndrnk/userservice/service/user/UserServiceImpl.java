@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -45,6 +46,11 @@ public class UserServiceImpl implements UserService {
         UserResponse response = userMapper.entityToResponse(saved);
         log.info("User created with id: {}", response.id());
         return response;
+    }
+
+    @Override
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream().map(userMapper::entityToResponse).collect(Collectors.toList());
     }
 
 

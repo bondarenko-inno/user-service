@@ -20,6 +20,8 @@ public interface UserService {
      */
     UserResponse createUser(UserRequest userRequest);
 
+    List<UserResponse> getAllUsers();
+
     /**
      * Retrieves a user by its unique identifier.
      *

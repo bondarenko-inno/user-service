@@ -86,6 +86,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @GetMapping()
+    public ResponseEntity<List<UserResponse>> findAll() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+
     /**
      * Retrieve multiple users by IDs.
      *
